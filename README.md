@@ -1,2 +1,0 @@
-# BuzzySocial
-School project
