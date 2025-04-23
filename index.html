@@ -1,42 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>YouTube Trending Videos</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YouTube Top 10 Trending Videos</title>
   <style>
+    /* Reset some default styles */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #FFF2F2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
+      margin: 0;
       padding: 20px;
-      color: #2D336B;
-    }
-    h1 {
-      text-align: center;
-    }
-    .card {
-      background: #A9B5DF;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 10px;
+      color: #1a1a2e;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
     }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #16213e;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+
+    #trendContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
     .thumbnail {
-      width: 120px;
-      height: 90px;
-      margin-right: 15px;
-      border-radius: 5px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
       object-fit: cover;
+      border-bottom: 1px solid #eee;
+      transition: transform 0.3s ease;
     }
+
+    .card:hover .thumbnail {
+      transform: scale(1.05);
+    }
+
     .video-info {
-      flex: 1;
+      padding: 15px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
+
     .video-title {
-      font-size: 1.1em;
-      margin-bottom: 5px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #0f3460;
+      text-decoration: none;
+      line-height: 1.3;
+      flex-grow: 1;
     }
+
+    .video-title:hover {
+      text-decoration: underline;
+      color: #16213e;
+    }
+
     .channel-title {
-      font-size: 0.95em;
-      color: #555;
+      font-size: 0.9rem;
+      color: #555a75;
+      margin-bottom: 8px;
+    }
+
+    .stats {
+      font-size: 0.85rem;
+      color: #777a91;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stats svg {
+      width: 16px;
+      height: 16px;
+      fill: #777a91;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 400px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
@@ -45,10 +125,13 @@
   <div id="trendContainer"></div>
 
   <script>
-    // Replace with your actual API key
-    const API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
-    // Change regionCode as needed (e.g., 'IN' for India, 'US' for United States)
+    const API_KEY = 'YOUR_YOUTUBE_API_KEY';
     const API_URL = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US&key=${API_KEY}`;
+
+    function formatNumber(num) {
+      // Format large numbers with commas, e.g., 1234567 -> 1,234,567
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
     fetch(API_URL)
       .then(res => res.json())
@@ -58,18 +141,25 @@
           const div = document.createElement('div');
           div.className = 'card';
           div.innerHTML = `
-            <img class="thumbnail" src="${item.snippet.thumbnails.medium.url}" alt="Thumbnail">
+            <a href="https://www.youtube.com/watch?v=${item.id}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${item.snippet.title}">
+              <img class="thumbnail" src="${item.snippet.thumbnails.high.url}" alt="Thumbnail of ${item.snippet.title}" />
+            </a>
             <div class="video-info">
-              <div class="video-title"><a href="https://www.youtube.com/watch?v=${item.id}" target="_blank">${item.snippet.title}</a></div>
-              <div class="channel-title">By: ${item.snippet.channelTitle}</div>
-              <div>Views: ${item.statistics.viewCount}</div>
+              <a class="video-title" href="https://www.youtube.com/watch?v=${item.id}" target="_blank" rel="noopener noreferrer">${item.snippet.title}</a>
+              <div class="channel-title">${item.snippet.channelTitle}</div>
+              <div class="stats">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span>${formatNumber(item.statistics.viewCount)} views</span>
+              </div>
             </div>
           `;
           container.appendChild(div);
         });
       })
       .catch(err => {
-        document.getElementById('trendContainer').innerHTML = '<p>Could not load trending videos. Check your API key and quota.</p>';
+        const container = document.getElementById('trendContainer');
+        container.innerHTML = '<p style="color: #b00020; text-align:center;">Could not load trending videos. Please check your API key and quota.</p>';
+        console.error(err);
       });
   </script>
 </body>
