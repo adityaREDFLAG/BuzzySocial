@@ -218,8 +218,9 @@
   <div id="trendContainer"></div>
 
   <script>
-      const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
-    const TOGETHER_API_KEY = '6abbc7beb7d479176dec1b224d38306160b90d896989801672a8c5b8'
+    const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
+    // Fix 1: Corrected the TOGETHER_API_KEY - you should put your actual API key here
+    const TOGETHER_API_KEY = '6abbc7beb7d479176dec1b224d38306160b90d896989801672a8c5b8';
     const YT_API_URL = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US&key=${YT_API_KEY}`;
 
     async function getAIAnalysis(videoData) {
@@ -247,7 +248,8 @@ and *italics* for emphasis.`;
 
         const data = await response.json();
         return data.choices[0].message.content;
-      } catch (error)
+      } catch (error) {
+        // Fix 2: Fixed the missing closing bracket and properly formatted error handling
         return "**Analysis unavailable**\n\nUnable to fetch AI insights at the moment. Meta come onn broo we need ya!!! :(";
       }
     }
@@ -266,7 +268,7 @@ and *italics* for emphasis.`;
         const res = await fetch('https://api.together.xyz/v1/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${TOGETHER_API_KEY}`, // should work i think
+            'Authorization': `Bearer ${TOGETHER_API_KEY}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -317,7 +319,7 @@ and *italics* for emphasis.`;
           mdContent.innerHTML = marked.parse(analysis);
           loaded = true;
         } else {
-          analysisDiv.classList.toggle('open'); /// my head hurts lmao
+          analysisDiv.classList.toggle('open');
         }
       });
 
@@ -337,7 +339,7 @@ and *italics* for emphasis.`;
             <p>There was an error connecting to the YouTube API. Please try again later. (maybe Aditya was being a numskull and forgot to update the code)</p>
           </div>
         `;
-      }); //finished yayayaayaya!!!! thanks to people on youtube & stackoverflow!! (thanks)  ly 
+      }); /// alright thanks claude for refining ts piece of code :(
   </script>
 </body>
 </html> 
