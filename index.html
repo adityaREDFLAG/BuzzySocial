@@ -1,71 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reddit Trends</title>
-  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Google Trends: AI</title>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #FFF2F2;
-      color: #2D336B;
+      font-family: sans-serif;
+      background: #FFF2F2;
       padding: 20px;
+      color: #2D336B;
     }
     h1 {
       text-align: center;
-      font-family: 'League Spartan', sans-serif;
     }
-    .trend-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .trend-card {
-      background-color: #A9B5DF;
-      border-radius: 10px;
+    .card {
+      background: #A9B5DF;
+      margin: 10px 0;
       padding: 15px;
-      box-shadow: 0 4px 12px rgba(45, 51, 107, 0.1);
-    }
-    .trend-card h2 {
-      font-size: 1.1rem;
-      font-family: 'League Spartan', sans-serif;
-    }
-    .trend-card a {
-      color: #2D336B;
-      font-weight: 600;
-      text-decoration: none;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Reddit Trending Posts</h1>
-  <div class="trend-container" id="trendContainer"></div>
+  <h1>Google Trends: AI</h1>
+  <div id="trendContainer"></div>
 
   <script>
-    fetch("https://www.reddit.com/r/popular.json?limit=6")
+    fetch('trend_data.json')
       .then(res => res.json())
       .then(data => {
-        const posts = data.data.children;
         const container = document.getElementById('trendContainer');
-        
-        posts.forEach(post => {
-          const { title, permalink, thumbnail } = post.data;
-          
-          const card = document.createElement('div');
-          card.className = 'trend-card';
-          
-          card.innerHTML = `
-            <h2>${title}</h2>
-            <p><a href="https://www.reddit.com${permalink}" target="_blank">View Post</a></p>
-          `;
-          
-          container.appendChild(card);
+        data.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'card';
+          div.innerHTML = `<h3>${item.date}</h3><p>Interest: ${item.interest}</p>`;
+          container.appendChild(div);
         });
-      })
-      .catch(err => {
-        console.error("Error loading Reddit data", err);
       });
   </script>
 </body>
