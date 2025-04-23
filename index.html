@@ -168,60 +168,183 @@
       }
     }
 
-    #askAIContainer {
-      text-align: center;
-      margin-top: 40px;
+    /* Improved Chat Window Styles */
+    #chatWindow {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
     }
 
-    #askAIInput {
-      width: 60%;
-      max-width: 500px;
-      padding: 12px 16px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      outline: none;
-    }
-
-    #askAIButton {
-      padding: 12px 18px;
-      margin-left: 10px;
+    #chatHeader {
       background: #4361ee;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 500;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       cursor: pointer;
     }
 
+    #chatHeader h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    #chatHeader .chat-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    #chatHeader button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    #chatHeader button:hover {
+      opacity: 1;
+    }
+
+    #chatBody {
+      height: 300px;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
     #aiGlobalResponse {
-      max-width: 700px;
-      margin: 20px auto;
-      display: none;
       background: #f8f9fc;
-      border-left: 4px solid #4361ee;
       border-radius: 10px;
-      padding: 20px;
+      padding: 15px;
       color: #333;
-      font-size: 15px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid #4361ee;
+    }
+
+    #chatFooter {
+      padding: 10px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 10px;
+    }
+
+    #askAIInput {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #askAIButton {
+      background: #4361ee;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #askAIButton:hover {
+      background: #3a56d4;
+    }
+
+    .minimized {
+      height: 60px !important;
+    }
+
+    #chatBody.hidden {
+      display: none;
+    }
+
+    #chatFooter.hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div id="askAIContainer">
-    <input id="askAIInput" type="text" placeholder="Ask AI anything... ;)" />
-    <button id="askAIButton" onclick="askAI()">Ask</button>
+  <!-- Chat Window. :D THIS F(( TOOK AGES AHAHHA -->
+  <div id="chatWindow">
+    <div id="chatHeader">
+      <h3>AI Assistant</h3>
+      <div class="chat-controls">
+        <button id="minimizeChat"><i class="fa-solid fa-minus"></i></button>
+        <button id="closeChat"><i class="fa-solid fa-times"></i></button>
+      </div>
+    </div>
+    <div id="chatBody">
+      <div id="aiGlobalResponse">Hello! Ask me anything about these YouTube trends...</div>
+    </div>
+    <div id="chatFooter">
+      <input id="askAIInput" type="text" placeholder="Ask AI anything... ;)" />
+      <button id="askAIButton">Send</button>
+    </div>
   </div>
-  <div id="aiGlobalResponse"></div>
 
   <h1>YouTube Top 10 Trending Videos</h1> 
   <div id="trendContainer"></div>
 
   <script>
     const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
-    // Fix 1: Corrected the TOGETHER_API_KEY - you should put your actual API key here
-    const TOGETHER_API_KEY = 'tgp_v1_kndOi9j78iNy2sDOqiPcDzL2g8cpKaplrxOo9j9wjrg';
+    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
     const YT_API_URL = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US&key=${YT_API_KEY}`;
+
+    // Chat window functionality
+    const chatWindow = document.getElementById('chatWindow');
+    const chatHeader = document.getElementById('chatHeader');
+    const chatBody = document.getElementById('chatBody');
+    const chatFooter = document.getElementById('chatFooter');
+    const minimizeBtn = document.getElementById('minimizeChat');
+    const closeBtn = document.getElementById('closeChat');
+    const askInput = document.getElementById('askAIInput');
+    const askButton = document.getElementById('askAIButton');
+    const responseBox = document.getElementById('aiGlobalResponse');
+
+    // Setup chat buttons
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatWindow.classList.toggle('minimized');
+      chatBody.classList.toggle('hidden');
+      chatFooter.classList.toggle('hidden');
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatWindow.style.display = 'none';
+    });
+
+    chatHeader.addEventListener('click', () => {
+      if (chatWindow.classList.contains('minimized')) {
+        chatWindow.classList.remove('minimized');
+        chatBody.classList.remove('hidden');
+        chatFooter.classList.remove('hidden');
+      }
+    });
+
+    askButton.addEventListener('click', askAI);
+    askInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        askAI();
+      }
+    });
 
     async function getAIAnalysis(videoData) {
       const prompt = `Analyze why this YouTube video trended. Consider these factors:
@@ -249,20 +372,16 @@ and *italics* for emphasis.`;
         const data = await response.json();
         return data.choices[0].message.content;
       } catch (error) {
-        // Fix 2: Fixed the missing closing bracket and properly formatted error handling
         return "**Analysis unavailable**\n\nUnable to fetch AI insights at the moment. Meta come onn broo we need ya!!! :(";
       }
     }
 
     async function askAI() {
-      const input = document.getElementById('askAIInput');
-      const responseBox = document.getElementById('aiGlobalResponse');
-      const question = input.value.trim();
-
+      const question = askInput.value.trim();
       if (!question) return;
 
-      responseBox.style.display = 'block';
       responseBox.innerHTML = '<div class="ai-loading" style="height: 30px;"></div>';
+      askInput.value = '';
 
       try {
         const res = await fetch('https://api.together.xyz/v1/chat/completions', {
@@ -309,16 +428,20 @@ and *italics* for emphasis.`;
       const analyzeBtn = card.querySelector('.analyze-btn');
       const analysisDiv = card.querySelector('.ai-analysis');
       const mdContent = card.querySelector('.md-content');
-      let loaded = false;
-
+      
+      // Fix: Only add the open class when an analysis is explicitly requested
       analyzeBtn.addEventListener('click', async () => {
-        if (!loaded) {
+        // Check if the analysis is already loaded
+        if (mdContent.innerHTML === '') {
+          // Show loading indicator
           analysisDiv.classList.add('open');
           mdContent.innerHTML = '<div class="ai-loading"></div>';
+          
+          // Get and display analysis
           const analysis = await getAIAnalysis(videoData);
           mdContent.innerHTML = marked.parse(analysis);
-          loaded = true;
         } else {
+          // Toggle visibility of existing analysis
           analysisDiv.classList.toggle('open');
         }
       });
@@ -339,7 +462,7 @@ and *italics* for emphasis.`;
             <p>There was an error connecting to the YouTube API. Please try again later. (maybe Aditya was being a numskull and forgot to update the code)</p>
           </div>
         `;
-      }); /// alright thanks claude for refining ts piece of code :(
+      });
   </script>
 </body>
-</html> 
+</html>
