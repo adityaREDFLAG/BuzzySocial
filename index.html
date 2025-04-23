@@ -168,36 +168,63 @@
       }
     }
 
-    /* Improved Chat Window Styles */
+    /* Improved Chat Window Styles with Animations */
     #chatWindow {
       position: fixed;
       bottom: 20px;
       right: 20px;
       width: 350px;
       background: white;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
       overflow: hidden;
       z-index: 1000;
       display: flex;
       flex-direction: column;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: bottom right;
+    }
+
+    #chatWindow.hidden {
+      transform: scale(0);
+      opacity: 0;
     }
 
     #chatHeader {
-      background: #4361ee;
+      background: linear-gradient(135deg, #4361ee, #3a56d4);
       color: white;
       padding: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #chatHeader::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    #chatHeader:hover::before {
+      opacity: 1;
     }
 
     #chatHeader h3 {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     #chatHeader .chat-controls {
@@ -206,65 +233,239 @@
     }
 
     #chatHeader button {
-      background: none;
+      background: rgba(255, 255, 255, 0.2);
       border: none;
       color: white;
       cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
     }
 
     #chatHeader button:hover {
-      opacity: 1;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    #openChatBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 999;
+      transition: all 0.3s;
+      transform: scale(0);
+      animation: pulse 2s infinite;
+    }
+
+    #openChatBtn.visible {
+      transform: scale(1);
+    }
+
+    #openChatBtn i {
+      color: white;
+      font-size: 24px;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+      }
     }
 
     #chatBody {
-      height: 300px;
+      height: 320px;
       overflow-y: auto;
       padding: 15px;
       display: flex;
       flex-direction: column;
+      background: #f9faff;
+      scrollbar-width: thin;
+      scrollbar-color: #c7d2fe transparent;
     }
 
-    #aiGlobalResponse {
-      background: #f8f9fc;
+    #chatBody::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #chatBody::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #chatBody::-webkit-scrollbar-thumb {
+      background-color: #c7d2fe;
       border-radius: 10px;
-      padding: 15px;
-      color: #333;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-content {
+      padding: 12px 15px;
+      border-radius: 18px;
       font-size: 14px;
-      margin-bottom: 10px;
-      border-left: 4px solid #4361ee;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .user-message {
+      align-self: flex-end;
+    }
+
+    .user-message .message-content {
+      background: #4361ee;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-message {
+      align-self: flex-start;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .ai-avatar {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .ai-message .message-content {
+      background: white;
+      color: #333;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     #chatFooter {
-      padding: 10px;
-      border-top: 1px solid #eee;
+      padding: 12px;
+      border-top: 1px solid #eaecf5;
       display: flex;
       gap: 10px;
+      background: white;
     }
 
     #askAIInput {
       flex: 1;
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 20px;
+      padding: 12px 15px;
+      border: 1px solid #e1e5f2;
+      border-radius: 24px;
       outline: none;
       font-size: 14px;
+      background: #f5f7ff;
+      transition: all 0.2s;
+    }
+
+    #askAIInput:focus {
+      border-color: #4361ee;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
     }
 
     #askAIButton {
-      background: #4361ee;
+      background: linear-gradient(135deg, #4361ee, #3a56d4);
       color: white;
       border: none;
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 14px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 2px 5px rgba(67, 97, 238, 0.3);
     }
 
     #askAIButton:hover {
-      background: #3a56d4;
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 15px;
+      background: white;
+      border-radius: 18px;
+      width: fit-content;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #4361ee;
+      border-radius: 50%;
+      display: inline-block;
+      opacity: 0.4;
+    }
+
+    .typing-indicator span:nth-child(1) {
+      animation: typingAnimation 1s infinite 0s;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation: typingAnimation 1s infinite 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation: typingAnimation 1s infinite 0.4s;
+    }
+
+    @keyframes typingAnimation {
+      0% {
+        transform: translateY(0px);
+        opacity: 0.4;
+      }
+      50% {
+        transform: translateY(-5px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0px);
+        opacity: 0.4;
+      }
     }
 
     .minimized {
@@ -281,21 +482,33 @@
   </style>
 </head>
 <body>
+  <!-- Chat Window Button -->
+  <div id="openChatBtn" class="visible">
+    <i class="fas fa-comment-dots"></i>
+  </div>
+
   <!-- Chat Window -->
-  <div id="chatWindow">
+  <div id="chatWindow" class="hidden">
     <div id="chatHeader">
-      <h3>AI Assistant</h3>
+      <h3><i class="fas fa-robot"></i> YouTube AI Assistant</h3>
       <div class="chat-controls">
         <button id="minimizeChat"><i class="fa-solid fa-minus"></i></button>
         <button id="closeChat"><i class="fa-solid fa-times"></i></button>
       </div>
     </div>
     <div id="chatBody">
-      <div id="aiGlobalResponse">Hello! Ask me anything about these YouTube trends...</div>
+      <div class="message ai-message">
+        <div class="ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+          Hello! I'm your YouTube Trends AI assistant. Ask me anything about these trending videos!
+        </div>
+      </div>
     </div>
     <div id="chatFooter">
-      <input id="askAIInput" type="text" placeholder="Ask AI anything... ;)" />
-      <button id="askAIButton">Send</button>
+      <input id="askAIInput" type="text" placeholder="Type a message..." />
+      <button id="askAIButton"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 
@@ -303,8 +516,8 @@
   <div id="trendContainer"></div>
 
   <script>
-    const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
-    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
+       const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
+    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
     const YT_API_URL = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US&key=${YT_API_KEY}`;
 
     // Chat window functionality
@@ -314,9 +527,18 @@
     const chatFooter = document.getElementById('chatFooter');
     const minimizeBtn = document.getElementById('minimizeChat');
     const closeBtn = document.getElementById('closeChat');
+    const openChatBtn = document.getElementById('openChatBtn');
     const askInput = document.getElementById('askAIInput');
     const askButton = document.getElementById('askAIButton');
-    const responseBox = document.getElementById('aiGlobalResponse');
+
+    // Open chat button
+    openChatBtn.addEventListener('click', () => {
+      chatWindow.classList.remove('hidden');
+      openChatBtn.classList.remove('visible');
+      setTimeout(() => {
+        askInput.focus();
+      }, 300);
+    });
 
     // Setup chat buttons
     minimizeBtn.addEventListener('click', (e) => {
@@ -328,7 +550,10 @@
 
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      chatWindow.style.display = 'none';
+      chatWindow.classList.add('hidden');
+      setTimeout(() => {
+        openChatBtn.classList.add('visible');
+      }, 300);
     });
 
     chatHeader.addEventListener('click', () => {
@@ -336,6 +561,9 @@
         chatWindow.classList.remove('minimized');
         chatBody.classList.remove('hidden');
         chatFooter.classList.remove('hidden');
+        setTimeout(() => {
+          askInput.focus();
+        }, 300);
       }
     });
 
@@ -345,6 +573,56 @@
         askAI();
       }
     });
+
+    // Add user message to chat
+    function addUserMessage(text) {
+      const message = document.createElement('div');
+      message.className = 'message user-message';
+      message.innerHTML = `<div class="message-content">${text}</div>`;
+      chatBody.appendChild(message);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Add AI message to chat
+    function addAIMessage(text) {
+      const message = document.createElement('div');
+      message.className = 'message ai-message';
+      message.innerHTML = `
+        <div class="ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">${text}</div>
+      `;
+      chatBody.appendChild(message);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTyping() {
+      const typing = document.createElement('div');
+      typing.className = 'message ai-message typing-container';
+      typing.innerHTML = `
+        <div class="ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      `;
+      typing.id = 'typingIndicator';
+      chatBody.appendChild(typing);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Hide typing indicator
+    function hideTyping() {
+      const typing = document.getElementById('typingIndicator');
+      if (typing) {
+        typing.remove();
+      }
+    }
 
     async function getAIAnalysis(videoData) {
       const prompt = `Analyze why this YouTube video trended. Consider these factors:
@@ -380,8 +658,12 @@ and *italics* for emphasis.`;
       const question = askInput.value.trim();
       if (!question) return;
 
-      responseBox.innerHTML = '<div class="ai-loading" style="height: 30px;"></div>';
+      // Add user message to chat
+      addUserMessage(question);
+      
+      // Clear input and show typing indicator
       askInput.value = '';
+      showTyping();
 
       try {
         const res = await fetch('https://api.together.xyz/v1/chat/completions', {
@@ -396,9 +678,14 @@ and *italics* for emphasis.`;
           })
         });
         const data = await res.json();
-        responseBox.innerHTML = marked.parse(data.choices[0].message.content);
+        
+        // Hide typing indicator and add AI response
+        hideTyping();
+        addAIMessage(marked.parse(data.choices[0].message.content));
       } catch {
-        responseBox.innerHTML = "⚠️ Failed to fetch AI response! Ishan should be able to fix all that i think.. prob";
+        // Hide typing indicator and show error message
+        hideTyping();
+        addAIMessage("⚠️ Sorry, I couldn't process your request right now. Try again in a moment! ( or i js don’t want to ;)");
       }
     }
 
