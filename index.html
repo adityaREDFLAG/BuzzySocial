@@ -14,17 +14,43 @@
       line-height: 1.5;
     }
 
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px 0;
+    }
+
     h1 {
-      text-align: center;
       color: #FFF2F2;
-      margin: 30px 0 20px;
       font-size: 2.5rem;
       font-weight: 700;
+      margin: 0;
+    }
+
+    .chat-button {
+      background: #7886C7;
+      color: #FFF2F2;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .chat-button:hover {
+      background: #A9B5DF;
     }
 
     #trendContainer {
       max-width: 1200px;
-      margin: 0 auto 60px;
+      margin: 40px auto 60px;
       padding: 0 20px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -157,6 +183,15 @@
       to { transform: rotate(360deg); }
     }
 
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #FFF2F2;
+      background: #2D336B;
+      font-size: 14px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
     @media (max-width: 768px) {
       #trendContainer {
         grid-template-columns: 1fr;
@@ -164,14 +199,25 @@
 
       h1 {
         font-size: 2rem;
-        margin: 20px 0;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <h1>YouTube Top 10 Trending Videos</h1> 
+  <header>
+    <h1>YouTube Top 10 Trending Videos</h1>
+    <a href="/chat" class="chat-button"><i class="fa-solid fa-comments"></i> Chat</a>
+  </header>
+
   <div id="trendContainer"></div>
+
+  <footer>Made by Aditya</footer>
 
   <script>
     const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
@@ -206,17 +252,12 @@
       const mdContent = card.querySelector('.md-content');
       
       analyzeBtn.addEventListener('click', async () => {
-        // Check if the analysis is already loaded
         if (mdContent.innerHTML === '') {
-          // Show loading indicator
           analysisDiv.classList.add('open');
           mdContent.innerHTML = '<div class="ai-loading"></div>';
-          
-          // Get and display analysis
           const analysis = await getAIAnalysis(videoData);
           mdContent.innerHTML = marked.parse(analysis);
         } else {
-          // Toggle visibility of existing analysis
           analysisDiv.classList.toggle('open');
         }
       });
@@ -250,7 +291,7 @@ and *italics* for emphasis.`;
         const data = await response.json();
         return data.choices[0].message.content;
       } catch (error) {
-        return "**Analysis unavailable**\n\nUnable to fetch AI insights at the moment. Please try again later.";
+        return "**Analysis unavailable**\n\nUnable to fetch AI insights at the moment. Please try again later. (he dosn't want to pls)";
       }
     }
 
@@ -263,8 +304,8 @@ and *italics* for emphasis.`;
       .catch(error => {
         document.getElementById('trendContainer').innerHTML = `
           <div style="text-align: center; grid-column: 1/-1; padding: 40px; background: rgba(255, 242, 242, 0.1); border-radius: 12px;">
-            <h2>Unable to fetch trending videos</h2>
-            <p>There was an error connecting to the YouTube API. Please try again later.</p>
+            <h2>Unable to fetch trending videos 😭</h2>
+            <p>There was an error connecting to the YouTube API. Please try again later. T-T </p>
           </div>
         `;
       });
