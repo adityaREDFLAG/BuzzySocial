@@ -188,6 +188,7 @@
     #chatWindow.hidden {
       transform: scale(0);
       opacity: 0;
+      pointer-events: none;
     }
 
     #chatHeader {
@@ -300,6 +301,7 @@
       background: #f9faff;
       scrollbar-width: thin;
       scrollbar-color: #c7d2fe transparent;
+      transition: all 0.3s ease;
     }
 
     #chatBody::-webkit-scrollbar {
@@ -382,6 +384,7 @@
       display: flex;
       gap: 10px;
       background: white;
+      transition: all 0.3s ease;
     }
 
     #askAIInput {
@@ -468,16 +471,47 @@
       }
     }
 
-    .minimized {
+    #chatWindow.minimized {
       height: 60px !important;
     }
 
-    #chatBody.hidden {
-      display: none;
+    #chatWindow.minimized #chatBody,
+    #chatWindow.minimized #chatFooter {
+      max-height: 0;
+      padding: 0;
+      overflow: hidden;
+      opacity: 0;
     }
 
-    #chatFooter.hidden {
-      display: none;
+    /* Animation for close/open */
+    @keyframes zoomIn {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes zoomOut {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+    
+    .zoom-in {
+      animation: zoomIn 0.3s forwards;
+    }
+    
+    .zoom-out {
+      animation: zoomOut 0.3s forwards;
     }
   </style>
 </head>
@@ -516,8 +550,8 @@
   <div id="trendContainer"></div>
 
   <script>
-       const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
-    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
+    const YT_API_KEY = 'AIzaSyDyPCc1HqpoQZe75AlJFAW2pRlLdoAR4vM';
+    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
     const YT_API_URL = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US&key=${YT_API_KEY}`;
 
     // Chat window functionality
@@ -530,37 +564,70 @@
     const openChatBtn = document.getElementById('openChatBtn');
     const askInput = document.getElementById('askAIInput');
     const askButton = document.getElementById('askAIButton');
+    
+    let chatMinimized = false;
 
-    // Open chat button
+    // Open chat button with animation
     openChatBtn.addEventListener('click', () => {
-      chatWindow.classList.remove('hidden');
       openChatBtn.classList.remove('visible');
+      openChatBtn.style.animation = 'zoomOut 0.3s forwards';
+      
       setTimeout(() => {
-        askInput.focus();
-      }, 300);
+        chatWindow.classList.remove('hidden');
+        chatWindow.classList.add('zoom-in');
+        
+        setTimeout(() => {
+          chatWindow.classList.remove('zoom-in');
+          askInput.focus();
+        }, 300);
+      }, 200);
     });
 
-    // Setup chat buttons
+    // Setup minimize button
     minimizeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      chatWindow.classList.toggle('minimized');
-      chatBody.classList.toggle('hidden');
-      chatFooter.classList.toggle('hidden');
+      
+      if (!chatMinimized) {
+        // Minimize the chat
+        chatWindow.classList.add('minimized');
+        chatMinimized = true;
+      } else {
+        // Restore the chat
+        chatWindow.classList.remove('minimized');
+        chatMinimized = false;
+        setTimeout(() => {
+          askInput.focus();
+        }, 300);
+      }
     });
 
+    // Setup close button with animation
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      chatWindow.classList.add('hidden');
+      
+      chatWindow.classList.add('zoom-out');
+      
       setTimeout(() => {
+        chatWindow.classList.add('hidden');
+        chatWindow.classList.remove('zoom-out');
+        
+        // Reset minimized state if needed
+        if (chatMinimized) {
+          chatWindow.classList.remove('minimized');
+          chatMinimized = false;
+        }
+        
+        // Show open button with animation
+        openChatBtn.style.animation = '';
         openChatBtn.classList.add('visible');
       }, 300);
     });
 
+    // Make header clickable to restore from minimized state
     chatHeader.addEventListener('click', () => {
-      if (chatWindow.classList.contains('minimized')) {
+      if (chatMinimized) {
         chatWindow.classList.remove('minimized');
-        chatBody.classList.remove('hidden');
-        chatFooter.classList.remove('hidden');
+        chatMinimized = false;
         setTimeout(() => {
           askInput.focus();
         }, 300);
@@ -658,6 +725,12 @@ and *italics* for emphasis.`;
       const question = askInput.value.trim();
       if (!question) return;
 
+      // If chat is minimized, restore it i think this shoukld work idk b
+      if (chatMinimized) {
+        chatWindow.classList.remove('minimized');
+        chatMinimized = false;
+      }
+
       // Add user message to chat
       addUserMessage(question);
       
@@ -685,7 +758,7 @@ and *italics* for emphasis.`;
       } catch {
         // Hide typing indicator and show error message
         hideTyping();
-        addAIMessage("⚠️ Sorry, I couldn't process your request right now. Try again in a moment! ( or i js don’t want to ;)");
+        addAIMessage("⚠️ Sorry, I couldn't process your request right now. Try again in a moment! ( or i js don't want to ;)");
       }
     }
 
