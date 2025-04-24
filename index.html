@@ -6,9 +6,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
   <style>
     body {
-      background: #f0f3fa;
+      background: #FFF2F2;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      color: #1a1a2e;
+      color: #2D336B;
       margin: 0;
       padding: 0;
       line-height: 1.5;
@@ -16,7 +16,7 @@
 
     h1 {
       text-align: center;
-      color: #1a1a2e;
+      color: #2D336B;
       margin: 30px 0 20px;
       font-size: 2.5rem;
       font-weight: 700;
@@ -35,7 +35,7 @@
       background: white;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 20px rgba(120, 134, 199, 0.15);
       transition: transform 0.2s ease;
       height: 100%;
       display: flex;
@@ -63,13 +63,13 @@
       font-size: 18px;
       font-weight: 600;
       text-decoration: none;
-      color: #1a1a2e;
+      color: #2D336B;
       margin-bottom: 12px;
       line-height: 1.4;
     }
 
     .video-title:hover {
-      color: #4361ee;
+      color: #7886C7;
     }
 
     .channel-title {
@@ -88,12 +88,12 @@
     }
 
     .views i {
-      color: #666;
+      color: #7886C7;
       opacity: 0.8;
     }
 
     .analyze-btn {
-      background: #4361ee;
+      background: #7886C7;
       color: white;
       border: none;
       padding: 8px 16px;
@@ -106,14 +106,14 @@
     }
 
     .analyze-btn:hover {
-      background: #3a56d4;
+      background: #2D336B;
     }
 
     .ai-analysis {
-      background: #f8f9fc;
-      border-left: 4px solid #4361ee;
+      background: #A9B5DF;
+      border-left: 4px solid #2D336B;
       border-radius: 10px;
-      color: #333;
+      color: #2D336B;
       font-size: 14px;
       max-height: 0;
       overflow: hidden;
@@ -129,11 +129,11 @@
 
     .ai-analysis .md-content strong,
     .ai-analysis .md-content b {
-      color: #1a1a2e;
+      color: #2D336B;
     }
 
     .ai-analysis .md-content em {
-      color: #4361ee;
+      color: #7886C7;
     }
 
     .ai-loading {
@@ -147,7 +147,7 @@
       content: "";
       width: 20px;
       height: 20px;
-      border: 2px solid #4361ee;
+      border: 2px solid #7886C7;
       border-radius: 50%;
       border-top-color: transparent;
       animation: spin 1s linear infinite;
@@ -176,7 +176,7 @@
       width: 350px;
       background: white;
       border-radius: 16px;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 30px rgba(45, 51, 107, 0.2);
       overflow: hidden;
       z-index: 1000;
       display: flex;
@@ -192,7 +192,7 @@
     }
 
     #chatHeader {
-      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      background: linear-gradient(135deg, #7886C7, #2D336B);
       color: white;
       padding: 15px;
       display: flex;
@@ -258,9 +258,9 @@
       right: 20px;
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      background: linear-gradient(135deg, #7886C7, #2D336B);
       border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+      box-shadow: 0 4px 15px rgba(45, 51, 107, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -282,13 +282,13 @@
 
     @keyframes pulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7);
+        box-shadow: 0 0 0 0 rgba(120, 134, 199, 0.7);
       }
       70% {
-        box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+        box-shadow: 0 0 0 10px rgba(120, 134, 199, 0);
       }
       100% {
-        box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+        box-shadow: 0 0 0 0 rgba(120, 134, 199, 0);
       }
     }
 
@@ -298,9 +298,9 @@
       padding: 15px;
       display: flex;
       flex-direction: column;
-      background: #f9faff;
+      background: #FFF2F2;
       scrollbar-width: thin;
-      scrollbar-color: #c7d2fe transparent;
+      scrollbar-color: #A9B5DF transparent;
       transition: all 0.3s ease;
     }
 
@@ -313,7 +313,7 @@
     }
 
     #chatBody::-webkit-scrollbar-thumb {
-      background-color: #c7d2fe;
+      background-color: #A9B5DF;
       border-radius: 10px;
     }
 
@@ -347,7 +347,7 @@
     }
 
     .user-message .message-content {
-      background: #4361ee;
+      background: #7886C7;
       color: white;
       border-bottom-right-radius: 4px;
     }
@@ -362,7 +362,7 @@
     .ai-avatar {
       width: 30px;
       height: 30px;
-      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      background: linear-gradient(135deg, #7886C7, #2D336B);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -373,14 +373,14 @@
 
     .ai-message .message-content {
       background: white;
-      color: #333;
+      color: #2D336B;
       border-bottom-left-radius: 4px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     #chatFooter {
       padding: 12px;
-      border-top: 1px solid #eaecf5;
+      border-top: 1px solid #A9B5DF;
       display: flex;
       gap: 10px;
       background: white;
@@ -390,22 +390,22 @@
     #askAIInput {
       flex: 1;
       padding: 12px 15px;
-      border: 1px solid #e1e5f2;
+      border: 1px solid #A9B5DF;
       border-radius: 24px;
       outline: none;
       font-size: 14px;
-      background: #f5f7ff;
+      background: #FFF2F2;
       transition: all 0.2s;
     }
 
     #askAIInput:focus {
-      border-color: #4361ee;
+      border-color: #7886C7;
       background: white;
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+      box-shadow: 0 0 0 3px rgba(120, 134, 199, 0.15);
     }
 
     #askAIButton {
-      background: linear-gradient(135deg, #4361ee, #3a56d4);
+      background: linear-gradient(135deg, #7886C7, #2D336B);
       color: white;
       border: none;
       border-radius: 50%;
@@ -416,12 +416,12 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 2px 5px rgba(67, 97, 238, 0.3);
+      box-shadow: 0 2px 5px rgba(45, 51, 107, 0.3);
     }
 
     #askAIButton:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
+      box-shadow: 0 4px 8px rgba(45, 51, 107, 0.4);
     }
 
     .typing-indicator {
@@ -438,7 +438,7 @@
     .typing-indicator span {
       width: 8px;
       height: 8px;
-      background: #4361ee;
+      background: #7886C7;
       border-radius: 50%;
       display: inline-block;
       opacity: 0.4;
@@ -725,7 +725,7 @@ and *italics* for emphasis.`;
       const question = askInput.value.trim();
       if (!question) return;
 
-      // If chat is minimized, restore it i think this shoukld work idk b
+      // If chat is minimized, restore it
       if (chatMinimized) {
         chatWindow.classList.remove('minimized');
         chatMinimized = false;
@@ -758,7 +758,7 @@ and *italics* for emphasis.`;
       } catch {
         // Hide typing indicator and show error message
         hideTyping();
-        addAIMessage("⚠️ Sorry, I couldn't process your request right now. Try again in a moment! ( or i js don't want to ;)");
+        addAIMessage("⚠️ Sorry, I couldn't process your request right now. Try again in a moment!");
       }
     }
 
@@ -801,7 +801,7 @@ and *italics* for emphasis.`;
           const analysis = await getAIAnalysis(videoData);
           mdContent.innerHTML = marked.parse(analysis);
         } else {
-          // Toggle visibility of existing analysis
+          // Toggle visibility of existing analysis (thanks claude for optimiseing ma code)
           analysisDiv.classList.toggle('open');
         }
       });
@@ -819,7 +819,7 @@ and *italics* for emphasis.`;
         document.getElementById('trendContainer').innerHTML = `
           <div style="text-align: center; grid-column: 1/-1; padding: 40px;">
             <h2>Unable to fetch trending videos</h2>
-            <p>There was an error connecting to the YouTube API. Please try again later. (maybe Aditya was being a numskull and forgot to update the code)</p>
+            <p>There was an error connecting to the YouTube API. Please try again later.</p>
           </div>
         `;
       });
