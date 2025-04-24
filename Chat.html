@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube AI Chat Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background: #2D336B;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: #FFF2F2;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 242, 242, 0.1);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFF2F2;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .home-link {
+      background: #7886C7;
+      color: #FFF2F2;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    .home-link:hover {
+      background: #A9B5DF;
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+      padding: 24px 0;
+    }
+
+    .message {
+      display: flex;
+      padding: 20px 24px;
+      margin-bottom: 8px;
+    }
+
+    .ai-message {
+      background-color: rgba(255, 242, 242, 0.05);
+    }
+
+    .user-message {
+      background-color: transparent;
+    }
+
+    .message-content {
+      display: flex;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .ai-avatar {
+      background: linear-gradient(135deg, #7886C7, #A9B5DF);
+      color: #FFF2F2;
+    }
+
+    .user-avatar {
+      background: #FFF2F2;
+      color: #2D336B;
+    }
+
+    .message-text {
+      flex: 1;
+      line-height: 1.6;
+    }
+
+    .input-area {
+      padding: 24px;
+      background-color: #2D336B;
+      border-top: 1px solid rgba(255, 242, 242, 0.1);
+      position: sticky;
+      bottom: 0;
+    }
+
+    .input-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    #message-input {
+      width: 100%;
+      padding: 12px 50px 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #A9B5DF;
+      background: rgba(255, 242, 242, 0.05);
+      color: #FFF2F2;
+      font-size: 16px;
+      resize: none;
+      min-height: 24px;
+      max-height: 200px;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    #message-input:focus {
+      border-color: #7886C7;
+      box-shadow: 0 0 0 3px rgba(120, 134, 199, 0.2);
+    }
+
+    #send-button {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #A9B5DF;
+      cursor: pointer;
+      font-size: 18px;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    #send-button:hover {
+      color: #FFF2F2;
+      transform: scale(1.1);
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .typing-indicator span {
+      width: 6px;
+      height: 6px;
+      background: #A9B5DF;
+      border-radius: 50%;
+      display: inline-block;
+      opacity: 0.8;
+    }
+
+    .typing-indicator span:nth-child(1) {
+      animation: typingAnimation 1s infinite 0s;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation: typingAnimation 1s infinite 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation: typingAnimation 1s infinite 0.4s;
+    }
+
+    @keyframes typingAnimation {
+      0% {
+        transform: translateY(0px);
+        opacity: 0.8;
+      }
+      50% {
+        transform: translateY(-3px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0px);
+        opacity: 0.8;
+      }
+    }
+
+    /* Auto-resize textarea */
+    #message-input {
+      overflow: hidden;
+    }
+
+    #message-input:focus {
+      outline: none;
+    }
+
+    /* For WebKit browsers (Chrome, Safari) */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 242, 242, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 242, 242, 0.15);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 242, 242, 0.25);
+    }
+
+    /* Welcome Effect */
+    .welcome-message {
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Link styling within AI messages */
+    .message-text a {
+      color: #A9B5DF;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .message-text a:hover {
+      color: #FFF2F2;
+    }
+
+    /* Code styling */
+    pre {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-title">
+      <i class="fas fa-robot"></i> YouTube AI Assistant
+    </div>
+    <a href="index.html" class="home-link">
+      <i class="fas fa-home"></i> Back to Trends
+    </a>
+  </header>
+
+  <div class="chat-container" id="chat-container">
+    <div class="message ai-message welcome-message">
+      <div class="message-content">
+        <div class="avatar ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-text">
+          Hello! I'm your YouTube AI assistant. I can help answer questions about trending videos, 
+          content creation strategies, YouTube algorithms, or anything else related to YouTube. 
+          What would you like to know?
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-container">
+      <textarea id="message-input" placeholder="Ask me anything about YouTube..." rows="1"></textarea>
+      <button id="send-button">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const TOGETHER_API_KEY = 'tgp_v1_DH5WnL0d6bMMWkrEqPjWYf9zUSVhNiD3kwU52CCawfo';
+    const chatContainer = document.getElementById('chat-container');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    // Auto-resize textarea based on content
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Send message on Enter (but allow Shift+Enter for new line)
+    messageInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      // Add user message
+      addMessage('user', message);
+      
+      // Clear input and reset height
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      // Get AI response
+      getAIResponse(message);
+    }
+
+    function addMessage(role, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = role === 'user' ? 'message user-message' : 'message ai-message';
+      
+      messageDiv.innerHTML = `
+        <div class="message-content">
+          <div class="avatar ${role === 'user' ? 'user-avatar' : 'ai-avatar'}">
+            <i class="fas ${role === 'user' ? 'fa-user' : 'fa-robot'}"></i>
+          </div>
+          <div class="message-text">${content}</div>
+        </div>
+      `;
+      
+      chatContainer.appendChild(messageDiv);
+      
+      // Scroll to bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message ai-message';
+      typingDiv.id = 'typing-indicator';
+      
+      typingDiv.innerHTML = `
+        <div class="message-content">
+          <div class="avatar ai-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      `;
+      
+      chatContainer.appendChild(typingDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    async function getAIResponse(message) {
+      try {
+        const prompt = `You are a helpful YouTube analytics and content expert assistant. 
+                        You provide insights about YouTube trends, content creation, and analytics.
+                        
+                        User question: ${message}
+                        
+                        Provide a helpful and informative response. Include specific details, examples,
+                        or actionable advice when appropriate.`;
+        
+        const response = await fetch('https://api.together.xyz/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${TOGETHER_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+            messages: [{ role: "user", content: prompt }]
+          })
+        });
+
+        const data = await response.json();
+        const aiReply = data.choices[0].message.content;
+        
+        // Hide typing indicator and show response
+        hideTypingIndicator();
+        addMessage('ai', formatResponse(aiReply));
+      } catch (error) {
+        // Hide typing indicator and show error message
+        hideTypingIndicator();
+        addMessage('ai', "Sorry, I'm having trouble connecting to my brain right now. Please try again in a moment.");
+      }
+    }
+
+    function formatResponse(text) {
+      // Basic formatting for code blocks, bold, italic
+      let formatted = text
+        // Replace markdown code blocks with HTML
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        // Replace markdown bold with HTML bold
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Replace markdown italic with HTML italic
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Replace URLs with clickable links
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+        // Replace line breaks with HTML breaks
+        .replace(/\n/g, '<br>');
+      
+      return formatted;
+    }
+
+    // Focus input on page load
+    window.onload = function() {
+      messageInput.focus();
+    };
+  </script>
+</body>
+</html>
