@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dynr – Professional Search</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Root colors and variables */
+    :root {
+      --gold: #FFD700;
+      --bg: #18171f;
+      --sidebar-bg: rgba(22, 22, 30, 0.92);
+      --search-bg: #18171f;
+      --search-border: var(--gold);
+      --search-text: #fff;
+      --hint-color: #b4b4b4;
+      --radius: 32px;
+      --transition: 0.18s cubic-bezier(.4,0,.2,1);
+      --panel-bg: #161625;
+      --primary: #00fff7;
+      --accent: #292940;
+      --card-bg: #202030;
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Playfair Display', serif;
+    }
+
+    /* Reset & base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      background: radial-gradient(ellipse at 60% 40%, #23212d 0%, var(--bg) 100%);
+      color: #fff;
+      font-family: var(--font-sans);
+      overflow: hidden;
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Sidebar */
+    nav.sidebar {
+      width: 220px;
+      background: var(--sidebar-bg);
+      padding: 40px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      border-right: 1px solid #23212d;
+      user-select: none;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      color: var(--gold);
+      margin-bottom: 48px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .sidebar-nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-left: 32px;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 10px 0;
+      border-radius: 8px 0 0 8px;
+      transition: background var(--transition), color var(--transition);
+      cursor: pointer;
+    }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      background: rgba(255,215,0,0.08);
+      color: var(--gold);
+    }
+    .sidebar-nav .icon {
+      font-size: 1.2rem;
+      width: 22px;
+      text-align: center;
+      min-width: 22px;
+    }
+
+    /* Main content */
+    main.main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 48px 48px 48px 48px;
+      overflow-y: auto;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* Logo */
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 4.2rem;
+      color: var(--gold);
+      margin-bottom: 38px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-align: center;
+      user-select: none;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeSlideIn 0.6s forwards 0.1s;
+    }
+
+    /* Search bar */
+    .search-bar {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      margin-bottom: 12px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeSlideIn 0.6s forwards 0.3s;
+    }
+    .search-bar form {
+      display: flex;
+      position: relative;
+      width: 100%;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 20px 56px 20px 48px;
+      background: var(--search-bg);
+      border: 2px solid var(--search-border);
+      border-radius: var(--radius);
+      color: var(--search-text);
+      font-size: 1.3rem;
+      outline: none;
+      box-shadow: 0 4px 32px rgba(255,215,0,0.05);
+      transition: border var(--transition), box-shadow var(--transition);
+      font-weight: 500;
+      font-family: var(--font-sans);
+    }
+    .search-bar input::placeholder {
+      color: var(--hint-color);
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+    .search-bar input:focus {
+      border-color: #fffbe6;
+      box-shadow: 0 0 0 3px #fffbe6;
+    }
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
+      font-size: 1.5rem;
+      pointer-events: none;
+    }
+
+    /* Search hint */
+    .search-hint {
+      color: var(--hint-color);
+      font-size: 1rem;
+      margin-top: 6px;
+      text-align: center;
+      letter-spacing: 0.01em;
+      user-select: none;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: fadeSlideIn 0.6s forwards 0.5s;
+    }
+
+    /* Suggestions dropdown */
+    #suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--search-bg);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: 0 8px 32px rgba(255,215,0,0.15);
+      max-height: 280px;
+      overflow-y: auto;
+      border-top: 1.5px solid #222;
+      z-index: 100;
+      display: none;
+      animation: fadeInDown 0.25s ease forwards;
+    }
+    #suggestions.active {
+      display: block;
+    }
+    #suggestions div {
+      padding: 14px 32px;
+      cursor: pointer;
+      border-bottom: 1px solid #232345;
+      color: #fff;
+      font-size: 1.1rem;
+      transition: background var(--transition), color var(--transition);
+      user-select: none;
+    }
+    #suggestions div:last-child {
+      border-bottom: none;
+    }
+    #suggestions div:hover,
+    #suggestions .active {
+      background: #232345;
+      color: var(--primary);
+    }
+
+    /* Container for panels */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 32px;
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 36px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeSlideInUp 0.6s forwards 0.7s;
+    }
+    @media (max-width: 1100px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 24px;
+        padding: 0 12px;
+      }
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: 0 2px 24px rgba(0,255,255,0.03);
+      min-height: 220px;
+      transition: box-shadow var(--transition);
+      overflow-wrap: break-word;
+    }
+    .panel h3 {
+      margin-top: 0;
+      font-size: 22px;
+      color: var(--primary);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+
+    /* Main results */
+    .main-results {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .result-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 20px 18px 18px 18px;
+      box-shadow: 0 2px 14px rgba(0,255,255,0.07);
+      transition: box-shadow var(--transition), background var(--transition), transform var(--transition);
+      border-left: 4px solid transparent;
+      word-break: break-word;
+    }
+    .result-card:hover {
+      background: #232345;
+      box-shadow: 0 6px 24px rgba(0,255,255,0.12);
+      border-left: 4px solid var(--primary);
+      transform: translateY(-2px) scale(1.01);
+    }
+    .result-card a {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 19px;
+      text-decoration: none;
+      transition: color var(--transition);
+      word-break: break-word;
+    }
+    .result-card a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+    .result-card p {
+      color: #d8d8d8;
+      margin: 8px 0 0 0;
+      font-size: 15.5px;
+    }
+
+    /* Related keywords */
+    .related-keywords {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .keyword-pill {
+      background: var(--accent);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: background var(--transition), color var(--transition);
+      box-shadow: 0 0 8px rgba(0,255,255,0.12);
+      user-select: none;
+    }
+    .keyword-pill:hover,
+    .keyword-pill:focus {
+      background: var(--primary);
+      color: #161625;
+    }
+
+    /* Loading & error */
+    .loading {
+      text-align: center;
+      padding: 24px 0;
+      font-style: italic;
+      color: #aaa;
+      user-select: none;
+    }
+    .error-message {
+      color: #ff6b6b;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 15px;
+      user-select: none;
+    }
+    .instruction {
+      color: #aaa;
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+      user-select: none;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+    @keyframes fadeSlideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Scrollbar for suggestions */
+    #suggestions::-webkit-scrollbar {
+      width: 8px;
+    }
+    #suggestions::-webkit-scrollbar-track {
+      background: var(--search-bg);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    #suggestions::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 700px) {
+      .search-bar form { max-width: 98vw; }
+      .container { padding: 8px 2vw; }
+      .panel { padding: 18px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="sidebar" role="navigation" aria-label="Main sidebar navigation">
+    <div class="sidebar-logo" aria-label="Dynr logo">Dynr</div>
+    <div class="sidebar-nav">
+      <a href="#" class="active" aria-current="page"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
+      <a href="#"><span class="icon"><i class="fas fa-list"></i></span>Registry</a>
+      <a href="#"><span class="icon"><i class="fas fa-comments"></i></span>Chatbot</a>
+      <a href="#"><span class="icon"><i class="fas fa-crown"></i></span>Premium</a>
+      <a href="#"><span class="icon"><i class="fas fa-link"></i></span>API</a>
+      <a href="#"><span class="icon"><i class="fas fa-ellipsis-h"></i></span>More</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="logo" aria-label="Dynr brand logo">Dynr</div>
+
+    <div class="search-bar" role="search" aria-label="Site search">
+      <form id="searchForm" autocomplete="off" novalidate>
+        <span class="search-icon" aria-hidden="true"><i class="fas fa-search"></i></span>
+        <input
+          type="search"
+          id="searchInput"
+          name="search"
+          placeholder="How do I cook..."
+          aria-autocomplete="list"
+          aria-controls="suggestions"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-activedescendant=""
+          autocomplete="off"
+          spellcheck="false"
+          required
+        />
+        <div id="suggestions" role="listbox" aria-label="Search suggestions"></div>
+      </form>
+      <div class="search-hint">Press <b>⏎ Enter</b> to search</div>
+    </div>
+
+    <div class="container" aria-live="polite" aria-atomic="true">
+      <!-- Definitions Panel -->
+      <section class="panel" id="definitions" aria-label="Definitions panel">
+        <h3>Definitions</h3>
+        <div id="definitionContent">
+          <p class="instruction">Enter a search term to see definitions</p>
+        </div>
+        <div class="related-keywords" id="relatedKeywords" aria-label="Related keywords"></div>
+      </section>
+
+      <!-- Main Results Panel -->
+      <section class="main-results panel" id="resultsFeed" aria-label="Search results">
+        <div class="result-card">
+          <p class="instruction">Search for something to see results</p>
+        </div>
+      </section>
+
+      <!-- Knowledge Card Panel -->
+      <section class="panel" id="knowledgeCard" aria-label="Knowledge card panel">
+        <h3>Knowledge Card</h3>
+        <div id="knowledgeContent">
+          <p class="instruction">Enter a search term to see knowledge information</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const SEARCHAPI_IO_KEY = "dzmGatxhvsvFALANHRbj3Zqk";
+    const SEARCHAPI_ENDPOINT = "https://www.searchapi.io/api/v1/search";
+
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsBox = document.getElementById('suggestions');
+    const searchForm = document.getElementById('searchForm');
+
+    let suggestionItems = [];
+    let activeSuggestion = -1;
+    let lastQuery = '';
+
+    // Update aria-activedescendant attribute for accessibility
+    function updateAriaActiveDescendant() {
+      if (activeSuggestion >= 0 && suggestionItems[activeSuggestion]) {
+        searchInput.setAttribute('aria-activedescendant', suggestionItems[activeSuggestion].id);
+      } else {
+        searchInput.removeAttribute('aria-activedescendant');
+      }
+    }
+
+    // Generate unique IDs for suggestions
+    function generateSuggestionId(index) {
+      return `suggestion-item-${index}`;
+    }
+
+    // Fetch autocomplete suggestions from SearchApi.io
+    async function fetchSuggestions(query) {
+      try {
+        const res = await fetch(`${SEARCHAPI_ENDPOINT}?engine=google_autocomplete&q=${encodeURIComponent(query)}&api_key=${SEARCHAPI_IO_KEY}`);
+        if (!res.ok) throw new Error('Failed to fetch suggestions');
+        const data = await res.json();
+        return data.suggestions || [];
+      } catch {
+        return [];
+      }
+    }
+
+    // Render suggestions dropdown
+    function renderSuggestions(suggestions) {
+      suggestionsBox.innerHTML = '';
+      if (!suggestions.length) {
+        suggestionsBox.classList.remove('active');
+        searchInput.setAttribute('aria-expanded', 'false');
+        return;
+      }
+      suggestions.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.textContent = item;
+        div.setAttribute('role', 'option');
+        div.id = generateSuggestionId(idx);
+        div.tabIndex = -1;
+        div.classList.remove('active');
+        div.addEventListener('click', () => {
+          handleSearch(item);
+        });
+        div.addEventListener('mousedown', e => e.preventDefault()); // prevent input blur
+        suggestionsBox.appendChild(div);
+      });
+      suggestionItems = Array.from(suggestionsBox.children);
+      activeSuggestion = -1;
+      suggestionsBox.classList.add('active');
+      searchInput.setAttribute('aria-expanded', 'true');
+      updateAriaActiveDescendant();
+    }
+
+    // Highlight suggestion at activeSuggestion index
+    function updateSuggestionHighlight() {
+      suggestionItems.forEach((item, idx) => {
+        if (idx === activeSuggestion) {
+          item.classList.add('active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      updateAriaActiveDescendant();
+    }
+
+    // Hide suggestions
+    function hideSuggestions() {
+      suggestionsBox.classList.remove('active');
+      searchInput.setAttribute('aria-expanded', 'false');
+      activeSuggestion = -1;
+      updateAriaActiveDescendant();
+    }
+
+    // Handle input event for autocomplete
+    searchInput.addEventListener('input', async () => {
+      const query = searchInput.value.trim();
+      if (query.length < 2) {
+        hideSuggestions();
+        return;
+      }
+      const suggestions = await fetchSuggestions(query);
+      renderSuggestions(suggestions);
+    });
+
+    // Keyboard navigation for suggestions
+    searchInput.addEventListener('keydown', e => {
+      if (suggestionsBox.classList.contains('active') && suggestionItems.length) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeSuggestion = (activeSuggestion + 1) % suggestionItems.length;
+          updateSuggestionHighlight();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeSuggestion = (activeSuggestion - 1 + suggestionItems.length) % suggestionItems.length;
+          updateSuggestionHighlight();
+        } else if (e.key === 'Enter') {
+          if (activeSuggestion >= 0) {
+            suggestionItems[activeSuggestion].click();
+            e.preventDefault();
+          } else {
+            handleSearch(searchInput.value.trim());
+          }
+          hideSuggestions();
+        } else if (e.key === 'Escape') {
+          hideSuggestions();
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSearch(searchInput.value.trim());
+      }
+    });
+
+    // Hide suggestions on click outside
+    document.addEventListener('click', e => {
+      if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
+        hideSuggestions();
+      }
+    });
+
+    // Search form submit handler
+    searchForm.addEventListener('submit', e => {
+      e.preventDefault();
+      handleSearch(searchInput.value.trim());
+      hideSuggestions();
+    });
+
+    // Main search handler
+    function handleSearch(query) {
+      if (!query) return;
+      lastQuery = query;
+      searchInput.value = query;
+      // Show loading states
+      showLoading();
+      fetchDefinitions(query);
+      fetchKnowledgeCard(query);
+      fetchResults(query);
+    }
+
+    // Show loading placeholders
+    function showLoading() {
+      document.getElementById('definitionContent').innerHTML = '<p class="loading">Loading definitions...</p>';
+      document.getElementById('knowledgeContent').innerHTML = '<p class="loading">Loading knowledge card...</p>';
+      document.getElementById('resultsFeed').innerHTML = '<div class="result-card"><p class="loading">Searching for results...</p></div>';
+      document.getElementById('relatedKeywords').innerHTML = '';
+    }
+
+    // Fetch definitions from dictionaryapi.dev
+    async function fetchDefinitions(query) {
+      try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('No definitions found');
+        const data = await res.json();
+        const container = document.getElementById('definitionContent');
+        container.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0 || data.title === "No Definitions Found") {
+          container.innerHTML = '<p class="error-message">No definitions found</p>';
+          return;
+        }
+        data[0].meanings.forEach(meaning => {
+          const p = document.createElement('p');
+          p.textContent = `(${meaning.partOfSpeech}) ${meaning.definitions[0].definition}`;
+          container.appendChild(p);
+        });
+        // Related keywords (synonyms)
+        const related = document.getElementById('relatedKeywords');
+        related.innerHTML = '';
+        let synonymsAdded = 0;
+        for (const meaning of data[0].meanings) {
+          if (!meaning.synonyms || meaning.synonyms.length === 0) continue;
+          for (const syn of meaning.synonyms.slice(0, 5)) {
+            const pill = document.createElement('button');
+            pill.className = 'keyword-pill';
+            pill.textContent = syn;
+            pill.onclick = () => handleSearch(syn);
+            related.appendChild(pill);
+            synonymsAdded++;
+            if (synonymsAdded >= 8) break;
+          }
+          if (synonymsAdded >= 8) break;
+        }
+      } catch {
+        document.getElementById('definitionContent').innerHTML = '<p class="error-message">Could not find definitions for this term</p>';
+      }
+    }
+
+    // Fetch knowledge card from SearchApi.io (Google Knowledge Graph)
+    async function fetchKnowledgeCard(query) {
+      try {
+        const res = await fetch(`${SEARCHAPI_ENDPOINT}?engine=google&q=${encodeURIComponent(query)}&api_key=${SEARCHAPI_IO_KEY}`);
+        if (!res.ok) throw new Error('No knowledge card found');
+        const data = await res.json();
+        const kg = data.knowledge_graph;
+        const container = document.getElementById('knowledgeContent');
+        container.innerHTML = '';
+        if (kg && kg.title) {
+          container.innerHTML = `
+            <h4>${kg.title}</h4>
+            ${kg.image ? `<img src="${kg.image}" alt="${kg.title}" style="max-width:100%; border-radius:12px; margin-bottom:10px;" />` : ''}
+            <p>${kg.description || ''}</p>
+            ${kg.source && kg.source.link ? `<small>Source: <a href="${kg.source.link}" target="_blank" rel="noopener" style="color:var(--primary);">${kg.source.name || kg.source.link}</a></small>` : ''}
+          `;
+        } else {
+          container.innerHTML = '<p class="error-message">No knowledge information found</p>';
+        }
+      } catch {
+        document.getElementById('knowledgeContent').innerHTML = '<p class="error-message">Could not find knowledge information</p>';
+      }
+    }
+
+    // Fetch main search results from SearchApi.io (Google)
+    async function fetchResults(query) {
+      try {
+        const res = await fetch(`${SEARCHAPI_ENDPOINT}?engine=google&q=${encodeURIComponent(query)}&api_key=${SEARCHAPI_IO_KEY}`);
+        if (!res.ok) throw new Error('No results found');
+        const data = await res.json();
+        const container = document.getElementById('resultsFeed');
+        container.innerHTML = '';
+        const results = (data.organic_results || []).slice(0, 7);
+        if (!results.length) {
+          container.innerHTML = '<div class="result-card"><p class="error-message">No results found</p></div>';
+          return;
+        }
+        results.forEach(result => {
+          const card = document.createElement('div');
+          card.className = 'result-card';
+          card.innerHTML = `
+            <a href="${result.link}" target="_blank" rel="noopener">${result.title}</a>
+            <p>${result.snippet || ''}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch {
+        document.getElementById('resultsFeed').innerHTML = '<div class="result-card"><p class="error-message">Could not load results</p></div>';
+      }
+    }
+  </script>
+</body>
+</html>
